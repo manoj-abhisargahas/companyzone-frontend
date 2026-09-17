@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- ================ Fonts ================ -->
+     <!-- This establishes a handshake with the server that holds the font style rules (the CSS). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- This establishes a handshake with the actual server holding the font files themselves.
+     The crossorigin attribute ensures the browser securely asks for the files anonymously. -->
+    <link rel="preconenct" href="https://fonts.gstatic.com" crossorigin>
+    <!-- This actually downloads the fonts. The display=swap part is a performance trick: 
+     it tells the browser to show a basic font immediately, and then "swap" it to Outfit/Roboto the second they finish downloading. 
+     This prevents your text from being invisible while loading. (Note: Making text invisible until font-loads is default behavior) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap">
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"> -->
+    
+    <!-- ================ App Styles ================ -->
+    <link rel="stylesheet" href="src/css/App.css">
+    <link rel="stylesheet" href="src/css/FullScreen.css">
+    <link rel="stylesheet" href="src/css/scrollbar-2.css">
+    <!-- <link rel="stylesheet" href="src/css/CartItems.css"> -->
+    <!-- <link rel="stylesheet" href="src/css/ToDoList.css"> -->
+    <!-- <link rel="stylesheet" href="src/css/ImageShowHide.css"> -->
+    <!-- <link rel="stylesheet" href="src/css/ViewEmployees.css"> -->
+    <!-- <link rel="stylesheet" href="src/css/PostEmployees.css"> -->
+
+    <!-- android-chrome-192x192.png and android-chrome-512x512.png: 
+         These two files are linked inside the site.webmanifest file itself -->
+    <!-- favicon.ico: This is a legacy backup file.
+         Modern web browsers automatically look for a file named exactly favicon.ico in your root folder by default. 
+         It works perfectly without any HTML tag at all. -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Zone</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

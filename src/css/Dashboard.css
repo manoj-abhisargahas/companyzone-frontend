@@ -1,0 +1,9 @@
+.greet-user {
+    font-size: 40px;
+    font-weight: 400;
+    margin-top: 50px;
+}
+
+.greet-user > span {
+    color: rgb(102, 102, 102);
+}

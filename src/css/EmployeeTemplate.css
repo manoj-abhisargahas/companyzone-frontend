@@ -1,0 +1,187 @@
+.main-container {
+    --tpad: 0;
+    --bpad: 0;
+    scrollbar-gutter: stable;
+}
+
+.content-sections {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 480px;
+    width: 480px;
+    margin: 0 auto;
+    padding: 0 20px 0 20px;
+}
+
+.emp-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    padding: 30px 30px 0px 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.emp-form > * {
+    margin-bottom: 4px;
+}
+
+.emp-form > *,
+.emp-form input,
+.emp-form select {
+    width: 100%;
+}
+
+.emp-form select {
+    cursor: pointer;
+}
+
+.emp-form .field-name {
+    margin-bottom: 3px;
+}
+
+.emp-form input,
+.emp-form select {
+    padding: 5px 10px;
+    box-sizing:border-box;
+    font-size: 16px;
+}
+
+.emp-form .f-error {
+    margin-top: 4px;
+}
+
+.emp-form .f-error,
+.emp-form .error {
+    font-size: 13.33px;
+}
+
+.msg-container {
+    padding: 5px 0 5px 0;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0); /* Fallback for very old browsers */
+    clip-path: inset(50%); /* Modern standard */
+    white-space: nowrap !important; /* Prevents text elements from wrapping awkwardly */
+}
+
+.border-dotted {
+    /* Gradients for Top, Right, Bottom, Left */
+    background-image: 
+        linear-gradient(to right, #999 60%, rgba(255, 255, 255, 0) 0%), /* Top */
+        linear-gradient(to bottom, #999 60%, rgba(255, 255, 255, 0) 0%), /* Right */
+        linear-gradient(to right, #999 60%, rgba(255, 255, 255, 0) 0%), /* Bottom */
+        linear-gradient(to bottom, #999 60%, rgba(194, 194, 194, 0) 0%); /* Left */
+    background-position: top left, top right, bottom left, top left;
+    background-repeat: repeat-x, repeat-y, repeat-x, repeat-y;
+    
+    /* Controls thickness and spacing cycle */
+    /* Format: width height */
+    background-size: 
+        16px 1px, /* Top border (16px repeat cycle, 1px thick) */
+        1px 16px, 
+        16px 1px, 
+        1px 16px;
+}
+
+.pfpic-box {
+    display: flex;
+    text-align: center;
+    width: 120px;
+    height: 120px;
+    margin-top: 6px;
+    box-sizing: border-box;
+    user-select: none;
+    position: relative;
+}
+
+label[for="epfpic"] {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 10px 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+label[for="epfpic"]:hover {
+    opacity: 0.7;
+}
+
+label[for="epfpic"]:active {
+    opacity: 0.4;
+}
+
+label[for="epfpic"] .icon {
+    font-size: 40px;
+    font-weight: 300;
+    color: #999;
+    font-family: emoji;
+    line-height: 1;
+}
+
+label[for="epfpic"] .text {
+    font-size: 16px;
+    color: #999;
+    line-height: 1.3;
+}
+
+.pfpic-box.nopic label,
+.pfpic-box.showpic img, 
+.pfpic-box.showpic button {
+    display: flex;
+}
+
+.pfpic-box.showpic label,
+.pfpic-box.nopic img, 
+.pfpic-box.nopic button {
+    display: none;
+}
+
+.pfpic-box img {
+    width: 100%;
+    height: 100%;
+}
+
+.pfpic-box button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.pfpic-box button .icon {
+    font-size: 42px;
+    color: transparent;
+    background-color: rgb(255, 255, 255);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.pfpic-box.showpic:hover button {
+    opacity: 1;
+}

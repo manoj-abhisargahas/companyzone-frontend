@@ -1,0 +1,18 @@
+.main-container.error404 .content-sections {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.head-txt {
+    font-weight: 800;
+    font-size: 108px;
+    text-align: center;
+    color: #333;
+}
+.txt {
+    font-size: 48px;
+    text-align: center;
+    color: #aaa;
+}

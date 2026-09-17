@@ -1,0 +1,15 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 20 20"
+  fill="currentColor"
+  stroke="currentColor"
+  style="overflow:visible;"
+>
+  <g>
+    <path d="M0.9,10.5c1.2-4,4.8-7,9.1-7c4.3,0,7.9,2.9,9.1,6.9"/>
+    <circle cx="10" cy="12" r="4.5"/>
+    <path d="M10.9,7.8c-0.1,1.2-0.7,2.3-1.7,3c-1.1,0.7-2.4,0.8-3.5,0.4"/>
+  </g>
+</svg>
