@@ -33,37 +33,13 @@ body {
     background-color: var(--app-bg-color);
 }
 
-header {
-    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    background-color: white;
-    display: flex;
-    align-items: center;
-    flex: none;
-}
-
-header .name {
-    font-size: 24px;
-    margin-left: 18px;
-    color: var(--app-color);
-}
-
-header .links {
-    height: 100%;
-    display: flex;
-    margin-left: auto;
-}
-
-header .links a {
-    padding: 18px;
-    text-decoration: none;
-    color: var(--app-color);
-}
-
-header .links a.active {
-    background-color: var(--app-color);
-    color: white;
+@keyframes start-load-opacity {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 #root {
@@ -100,6 +76,7 @@ main {
     --bpad: 20px;
     padding: var(--tpad) var(--rpad) var(--bpad) var(--lpad);
     box-sizing: border-box;
+    animation: start-load-opacity 0.1s both 0.1s ease-in;
 }
 
 .main-container .content {
@@ -210,6 +187,8 @@ aside {
     box-sizing: border-box;
     border-right: 1px solid #ddd;
     background-color: #fff;
+    width: 220px;
+    animation: start-load-opacity 0.1s both 0.1s ease-in;
 }
 
 aside.show {
@@ -246,7 +225,6 @@ aside.hide::-webkit-scrollbar {
 }
 
 a.brand-logo {
-    box-sizing: border-box;
     text-decoration: none;
     display: block;
 }
@@ -254,6 +232,7 @@ a.brand-logo {
 aside a.brand-logo {
     margin: 32px 0 32px 20px;
     width: 148px;
+    height: 76px;
 }
 
 aside.hide a.brand-logo {
@@ -264,6 +243,14 @@ aside.hide a.brand-logo {
 
 a.brand-logo img {
     width: 100%;
+}
+
+aside.show a.brand-logo img {
+    animation: start-load-opacity 0.1s both ease-in;
+}
+
+aside.hide a.brand-logo img {
+    animation: start-load-opacity 0.1s both ease-in;
 }
 
 .center-logo a.brand-logo {
@@ -335,6 +322,11 @@ aside nav a.active {
     white-space: wrap;
     overflow-wrap: anywhere;
     margin: auto 0;
+    width: 100%;
+}
+
+.msg-container .text > div {
+    margin-bottom: 3px;
 }
 
 .msg-container.align_c .text {

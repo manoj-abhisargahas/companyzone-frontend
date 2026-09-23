@@ -3,7 +3,6 @@ export function isOnlyPlainObject(value) {
 }
 
 export function flatten_arr(obj, flattened=[]) {
-    console.log(typeof obj);
     if(Array.isArray(obj)) {
         for(const ele of obj) {
             flatten_arr(ele, flattened);
@@ -18,7 +17,7 @@ export function flatten_arr(obj, flattened=[]) {
     return flattened;
 }
 
-export function manage_api_call_errors(errors, setResMsg, res_error_msg) {
+export function manage_axios_api_call_errors(errors, setResMsg, res_error_msg) {
     console.log('error:', errors);
     if(errors.response) {
         // 1. RESPONSE ERROR (Server replied with 400/401/500 status)
@@ -52,4 +51,23 @@ export function manage_api_call_errors(errors, setResMsg, res_error_msg) {
     }
 }
 
-export default {isOnlyPlainObject, flatten_arr, manage_api_call_errors};
+export function manage_fetch_api_call_errors(error, setResMsg) {
+    console.log('error:', error);
+    if(error instanceof TypeError || error.message==='Failed to Fetch') {
+        // 2. REQUEST ERROR (Network dropped or Server completely dead)
+        if(!navigator.onLine) {
+            setResMsg(['⚠ Please check your network!']);
+            console.log('⚠ Request Error: Please check your network!', error.message);
+        }
+        else{
+            setResMsg(['⚠ Server is not responding, Please try after sometime!']);
+            console.log('⚠ Server Error: Server is not responding, Please try after sometime!', error.message);
+        }
+    } else {
+        // 3. REQUEST SETUP ERROR (Local config bug, bad headers, or client crash)
+        setResMsg(['⚠ Something went wrong. Please try again!']);
+        console.log('⚠ Request Setup Error: Something went wrong. Please try again!', error.message);
+    }
+}
+
+export default {isOnlyPlainObject, flatten_arr, manage_axios_api_call_errors};

@@ -1,7 +1,8 @@
 import { useState, createContext, useContext } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { FullScreenProvider } from './components/FullScreen'
-import { AuthContextProvider, LoginRoute, ProtectedRouteLayout } from './components/Authentication'
+// import { RightPaneProvider } from './components/MainContent'
+import { AuthContextProvider } from './components/Authentication'
 import CompanyZone from './components/CompanyZone'
 import Login from './components/Login'
 import Error404 from './components/Error404'
@@ -19,13 +20,8 @@ function App() {
       <FullScreenProvider>
         <AuthContextProvider>
             <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<LoginRoute><Login /></LoginRoute>} />
-              {/* Protected Routes Grouped Under The Layout */}
-              <Route element={<ProtectedRouteLayout />} >
-                {/* All components below will automatically be protected */}
-                <Route path="/*" element={<CompanyZone />} />
-              </Route>
+              <Route path="/*" element={<CompanyZone />} />
+              <Route path="/login" element={<Login />} />
               {/* <Route path="*" element={<Error404 />} /> */}
             </Routes>
         </AuthContextProvider>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext} from 'react';
 import { useLocation, useNavigate, NavLink, useSearchParams } from 'react-router-dom'
 import axios from 'axios';
-import { flatten_arr } from './functions'
+import { flatten_arr, manage_axios_api_call_errors } from './functions'
 import { API_CONFIG } from '../js/config'
 import { useFullScreen } from './FullScreen'
 
@@ -14,6 +14,7 @@ import useExternalCss from './useExternalCss'
 
 import { ModalTypes } from './Modals'
 import { MainContainer, RightPane, useRightPane } from './MainContent'
+import { SkeletonRow, ImageWithSkeleton } from './Skeletons'
 
 const SERVER_BASE_URL = API_CONFIG.SERVER_BASE_URL;
 const API_BASE_URL = API_CONFIG.API_BASE_URL;
@@ -24,7 +25,7 @@ const getDeleteEmployeeApiURL = (eno) => `${API_BASE_URL}/Employee/${eno}/`;
 
 const compName = 'viewemps';
 function ViewEmployees() {
-    useExternalCss('/src/css/ViewEmployees.css');
+    // useExternalCss('/src/css/ViewEmployees.css');
     
     const reqStateStr = "⧖ Employee Data fetching from server!...";
     const resFailedStateStr = "⚠ Fetching Employee Data failed from server!";
@@ -72,7 +73,7 @@ function ViewEmployees() {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const default_limit_value = 3;
-    const [limit, setLimit] = useState(default_limit_value);
+    const [limit, setLimit] = useState(searchParams.get('limit') || default_limit_value);
     const limitRef = useRef(null);
     const currentPage = parseInt(searchParams.get('page')) || 1;
 
@@ -110,20 +111,22 @@ function ViewEmployees() {
         const DELETE_EMP_URL = getDeleteEmployeeApiURL(eno);
         axios.delete(DELETE_EMP_URL).then((response)=>{
             console.log(response);
-            const successMsg = `✔️ Employee (${response.data.eno}-${response.data.ename}) Deleted!`;
-            setFromMsg([successMsg]);
-            setFromMsgType('success');
-            
-            if(currViewEmp && (currViewEmp.eno==response.data.eno))
-                rightPane.close();
-            if(empData.length==1 && currentPage>1)
-                updatePaginationParams(currentPage-1, limit);
-            else
-                updatePaginationParams(currentPage, limit);
+            if(response.data) {
+                const successMsg = `✔️ Employee (${response.data.eno}-${response.data.ename}) Deleted!`;
+                setFromMsg([successMsg]);
+                setFromMsgType('success');
+                
+                if(currViewEmp && (currViewEmp.eno==response.data.eno))
+                    rightPane.close();
+                if(empData.length==1 && currentPage>1)
+                    updatePaginationParams(currentPage-1, limit);
+                else
+                    updatePaginationParams(currentPage, limit);
+            }
         }).catch((errors)=>{
             setFromMsgType('error');
-            manage_api_call_errors(errors, setFromMsg, "Deleting Employee Failed.");
-            // manage unique api call errors here, rest handle to "manage_api_call_errors"
+            manage_axios_api_call_errors(errors, setFromMsg, "Deleting Employee Failed.");
+            // manage unique api call errors here, rest handle to "manage_axios_api_call_errors"
             if(errors.response) {
                 setFromMsg(flatten_arr(errors.response.data));
             }
@@ -140,7 +143,9 @@ function ViewEmployees() {
         }
     }
 
+    const [isLoaded, setIsLoaded] = useState(false);
     function goToUrl(url) {
+
         if(!url) return;
         setResMsg(reqStateStr);
 
@@ -148,41 +153,48 @@ function ViewEmployees() {
         // presUrlObj.searchParams.set('limit', limitRef.current.value);
 
         axios.get(presUrlObj).then((response) => {
-            const TEMP_totalEmpCount = response.data.count;
-            const TEMP_currEmpCount = response.data.results.length;
+            if(response.data) {
+                setEmpData(response.data.results);
 
-            let TEMP_nextUrl = null
-            if(response.data.next) {
-                const nextUrlObj = new URL(response.data.next);
-                nextUrlObj.searchParams.set('limit', limit);
-                TEMP_nextUrl = nextUrlObj.toString();
-            }
-            
-            let TEMP_previousUrl = null
-            if(response.data.previous) {
-                const prevUrlObj = new URL(response.data.previous);
-                prevUrlObj.searchParams.set('limit', limit);
-                TEMP_previousUrl = prevUrlObj.toString();
-            }
+                const TEMP_totalEmpCount = response.data.count;
+                const TEMP_currEmpCount = response.data.results.length;
 
-            const pageNo = Number(presUrlObj.searchParams.get('page')) || 1;
-            const TEMP_currStartRecNo = (TEMP_currEmpCount==0)?0:(((pageNo-1) * limit) + 1);
-            const TEMP_currEndRecNo = (TEMP_currEmpCount==0)?0:((TEMP_currStartRecNo-1) + TEMP_currEmpCount);
-            
-            setTotalEmpCount(TEMP_totalEmpCount);
-            setCurrEmpCount(TEMP_currEmpCount);
-            setEmpData(response.data.results);
-            
-            setNextUrl(TEMP_nextUrl);
-            setPrevUrl(TEMP_previousUrl);
-            setCurrStartRecNo(TEMP_currStartRecNo);
-            setCurrEndRecNo(TEMP_currEndRecNo);
-            
-            setMsgType('success');
-            setResMsg(resSuccessStateStr);
+                let TEMP_nextUrl = null
+                if(response.data.next) {
+                    const nextUrlObj = new URL(response.data.next);
+                    nextUrlObj.searchParams.set('limit', limit);
+                    TEMP_nextUrl = nextUrlObj.toString();
+                }
+                
+                let TEMP_previousUrl = null
+                if(response.data.previous) {
+                    const prevUrlObj = new URL(response.data.previous);
+                    prevUrlObj.searchParams.set('limit', limit);
+                    TEMP_previousUrl = prevUrlObj.toString();
+                }
+
+                const pageNo = Number(presUrlObj.searchParams.get('page')) || 1;
+                const TEMP_currStartRecNo = (TEMP_currEmpCount==0)?0:(((pageNo-1) * limit) + 1);
+                const TEMP_currEndRecNo = (TEMP_currEmpCount==0)?0:((TEMP_currStartRecNo-1) + TEMP_currEmpCount);
+                
+                setTotalEmpCount(TEMP_totalEmpCount);
+                setCurrEmpCount(TEMP_currEmpCount);
+                setNextUrl(TEMP_nextUrl);
+                setPrevUrl(TEMP_previousUrl);
+                setCurrStartRecNo(TEMP_currStartRecNo);
+                setCurrEndRecNo(TEMP_currEndRecNo);
+                
+                setMsgType('success');
+                setResMsg(resSuccessStateStr);
+            } else {
+                setMsgType('error');
+                setResMsg(resFailedStateStr);
+            }
+            setIsLoaded(true);
         }).catch((errors) => {
             setMsgType('error');
             setResMsg(resFailedStateStr);
+            setIsLoaded(true);
             console.log("Error fetching Employee Data -", errors);
         });
     }
@@ -190,7 +202,6 @@ function ViewEmployees() {
     function triggerFetchEmployees() {
         const page_value = searchParams.get('page');
         const limit_value = searchParams.get('limit');
-        console.log('huvvaa>>>>>>', page_value, limit_value);
         FETCH_EMPS_API_URL.searchParams.set('page', page_value ?? currentPage);
         FETCH_EMPS_API_URL.searchParams.set('limit', limit_value ?? limit);
         
@@ -216,10 +227,10 @@ function ViewEmployees() {
                     <h1>Employees List</h1>
                 </div>
                 <div className='msg-container-wrapper'>
-                    { fromMsg?<div className={`msg-container official box ${ fromMsgType }`}>
+                    { fromMsg && <div className={`msg-container official box ${ fromMsgType }`}>
                                 <div className="text">{ fromMsg }</div>
                                 <button onClick={ closeFromMsg }>✕</button>
-                            </div>:''
+                            </div>
                     }
                 </div>
                 <div className="table-actions">
@@ -240,11 +251,11 @@ function ViewEmployees() {
                             <span>({ currStartRecNo }-{ currEndRecNo })</span>&nbsp;
                             <span>{ currEmpCount }&nbsp;{ currEmpCount==1?'Record':'Records' }</span>
                         </span>
-                        { <button disabled={ !prevUrl } className={`app-btn dark-invert ${ prevUrl?'':'invert' }`} onClick={ () => updateNextPaginationParams(prevUrl) }
+                        { <button disabled={ !prevUrl } className={`app-btn dark-invert ${ !prevUrl && 'invert' }`} onClick={ () => updateNextPaginationParams(prevUrl) }
                             title="Previous" aria-label="Previous">
                             <LeftIndicationIcon />
                         </button> }
-                        { <button disabled={ !nextUrl } className={`app-btn dark-invert ${ nextUrl?'':'invert' }`} onClick={ () => updateNextPaginationParams(nextUrl) }
+                        { <button disabled={ !nextUrl } className={`app-btn dark-invert ${ !nextUrl && 'invert' }`} onClick={ () => updateNextPaginationParams(nextUrl) }
                             title="Next" aria-label="Next">
                             <RightIndicationIcon />
                         </button> }
@@ -264,14 +275,14 @@ function ViewEmployees() {
                             </tr>
                         </thead>
                         <tbody>
-                            {empData.length==0?<tr>
+                            {!isLoaded && Array.from({length:limit},(_, index)=><SkeletonRow key={index} classname=""/>)}
+                            {(isLoaded && empData.length==0) && <tr>
                                 <td colSpan='7' className='no-data-row'>No Employee Data Found.</td>
-                            </tr>:''}
-                            {empData.map((emp) => { return (
+                            </tr>}
+                            {(isLoaded && empData.length>0) && empData.map((emp) => { return (
                             <tr key={ emp.eno }>
                                 <td className='pfpic'>
-                                    <div className="img-cont">{ emp.epfpic?<img src={`${SERVER_BASE_URL}${emp.epfpic}`} alt='⚠'></img>:''
-                                    }</div>
+                                    <ImageWithSkeleton src={emp.epfpic && `${SERVER_BASE_URL}${emp.epfpic}`} alt='epfpic'/>
                                 </td>
                                 <td className='align_c'>{ emp.eno ?? <span className='nahyp'>—</span> }</td>
                                 <td className='clickable' onClick={()=>setEmployeeToView(emp)}>{ emp.ename ?? <span className='nahyp'>—</span> }</td>
@@ -304,9 +315,9 @@ function ViewEmployees() {
                     </div>
                 </div>
             </MainContainer>
-            {rightPane.isOpen?<RightPane headTxt='Employee Details'>
+            {rightPane.isOpen && <RightPane headTxt='Employee Details'>
                 <ViewEmployeeTemplate emp={currViewEmp} onClickDelete={confirmDeleteEmployee} currPageParams={getCurrPageParams()}/>
-            </RightPane>:''}
+            </RightPane>}
         </>
     );
 }
@@ -315,7 +326,7 @@ function ViewEmployeeTemplate({emp, onClickDelete, currPageParams}) {
     if(!emp) return null;
     return(
     <div className='view-emp-content'>
-        <div className='epfpic'>{emp.epfpic ? <img src={`${SERVER_BASE_URL}${emp.epfpic}`}/> : ''}</div>
+        <div className='epfpic'>{emp.epfpic && <img src={`${SERVER_BASE_URL}${emp.epfpic}`}/>}</div>
         <div className="details">
             <div className='ename'>{emp.ename ?? <span className='fnahyp'>—</span>}</div>
             <div className='eno'><b>Employee ID:</b>&nbsp;{emp.eno ?? <span className='fnahyp'>—</span>}</div>

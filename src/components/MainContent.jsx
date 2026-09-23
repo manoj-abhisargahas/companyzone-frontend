@@ -30,7 +30,7 @@ export function RightPaneProvider({children}) {
 }
 
 export function RightPane({children, headTxt, inheritCompName}) {
-    const rightPane = useContext(RightPaneContext)
+    const rightPane = useContext(RightPaneContext);
     if(!rightPane || !rightPane.isOpen ) return null;
     return (
         <div className={`right-pane ${inheritCompName}`}>

@@ -4,7 +4,7 @@ import { MainContainer } from './MainContent'
 
 const compName='todozone';
 function ToDoZone() {
-    useExternalCss('/src/css/ToDoList.css');
+    // useExternalCss('/src/css/ToDoZone.css');
 
     let [nextId, setNextId] = useState(1);
     let [isItemFinished, setIsItemFinished] = useState(false);

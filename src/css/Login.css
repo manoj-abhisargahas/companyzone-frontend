@@ -1,0 +1,27 @@
+body {
+    overflow: auto;
+}
+.main {
+    max-width: 470px;
+    margin: 0 auto;
+}
+.main .page-head {
+    justify-content: center;
+    text-align: center;
+}
+#output-body {
+    text-align: center;
+}
+
+.emp-form-wrapper.main-container {
+    --lpad: 0;
+    --rpad: 0;
+}
+
+.page-head {
+    margin-top: 20px;
+}
+
+.center-logo {
+    margin-top: 60px;
+}

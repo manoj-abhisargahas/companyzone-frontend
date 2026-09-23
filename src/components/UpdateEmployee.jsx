@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useState, useEffect, useRef, useContext } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
-import { flatten_arr, manage_api_call_errors } from './functions'
+import { flatten_arr, manage_axios_api_call_errors } from './functions'
 import useExternalCss from './useExternalCss'
 import { API_CONFIG } from '../js/config'
 import { MainContainer, RightPane, useRightPane } from './MainContent'
@@ -15,7 +15,7 @@ const getUpdateEmployeeApiURL = (eno) => `${API_BASE_URL}/Employee/${eno}/`;
 
 const compName = 'updateemp';
 function UpdateEmployee() {
-    useExternalCss('/src/css/EmployeeTemplate.css');
+    // useExternalCss('/src/css/EmployeeTemplate.css');
     
     const {eno} = useParams();
     const ename = useRef(null);
@@ -67,26 +67,28 @@ function UpdateEmployee() {
         cleanResMsg();
 
         axios.get(getFetchEmployeeDetailsApiURL(eno)).then((response) => {
-            let emp = response.data;
-            setEmpInfo(emp);
-            
-            if(emp.epfpic) {
-                let epfpic_url = emp.epfpic;
-                // if url has '/' ending:
-                // Remove the leading slash from the path if it exists
-                // Eg: "/media/profile_pics/profile-pic-4.jpg" => "media/profile_pics/profile-pic-4.jpg"
-                // epfpic_url = epfpic_url.startsWith('/')?epfpic_url.slice(1):epfpic_url;
-                const full_epfpic_url = `${SERVER_BASE_URL}${epfpic_url}`;
-                SetPfpicUrl(full_epfpic_url);
-                SetPfpicClass('showpic');
-                console.log('epfpic_url:', full_epfpic_url);
-            }
+            if(response.data) {
+                let emp = response.data;
+                setEmpInfo(emp);
+                
+                if(emp.epfpic) {
+                    let epfpic_url = emp.epfpic;
+                    // if url has '/' ending:
+                    // Remove the leading slash from the path if it exists
+                    // Eg: "/media/profile_pics/profile-pic-4.jpg" => "media/profile_pics/profile-pic-4.jpg"
+                    // epfpic_url = epfpic_url.startsWith('/')?epfpic_url.slice(1):epfpic_url;
+                    const full_epfpic_url = `${SERVER_BASE_URL}${epfpic_url}`;
+                    SetPfpicUrl(full_epfpic_url);
+                    SetPfpicClass('showpic');
+                    console.log('epfpic_url:', full_epfpic_url);
+                }
 
-            setIsResMsgError(false);
+                setIsResMsgError(false);
+            }
         }).catch((errors) => {
             setIsResMsgError(true);
-            manage_api_call_errors(errors, setResMsg, "Fetching Employee Data Failed.");
-            // manage unique api call errors here, rest handle to "manage_api_call_errors"
+            manage_axios_api_call_errors(errors, setResMsg, "Fetching Employee Data Failed.");
+            // manage unique api call errors here, rest handle to "manage_axios_api_call_errors"
             if(errors.response) {
                 setResMsg(flatten_arr(errors.response.data));
             }
@@ -140,33 +142,34 @@ function UpdateEmployee() {
         // Axios automatically detects it and configures the Content-Type header for you.
         axios.put(getUpdateEmployeeApiURL(eno), formData).then((response) => {
             console.log(response);
-            
-            const successMsg = `✔️ Employee (${response.data.eno}-${response.data.ename}) Updated!`;
-            setResMsg([successMsg]);
-            setIsResMsgError(false);
+            if(response.data) {                
+                const successMsg = `✔️ Employee (${response.data.eno}-${response.data.ename}) Updated!`;
+                setResMsg([successMsg]);
+                setIsResMsgError(false);
 
-            const view_page_params = location.state?.view_page_params ?? '';
-            const params = new URLSearchParams(view_page_params);
-            navigate({
-                pathname: '/viewemployees',
-                search: params.toString()}, {
-                state: { msg:{text:successMsg, type:'success'} }
-            });
+                const view_page_params = location.state?.view_page_params ?? '';
+                const params = new URLSearchParams(view_page_params);
+                navigate({
+                    pathname: '/viewemployees',
+                    search: params.toString()}, {
+                    state: { msg:{text:successMsg, type:'success'} }
+                });
+            }
         }).catch((errors) => {
             setIsResMsgError(true);
-            manage_api_call_errors(errors, setResMsg, "Updating Employee Data Failed.");
-            // manage unique api call errors here, rest handle to "manage_api_call_errors"
+            manage_axios_api_call_errors(errors, setResMsg, "Updating Employee Data Failed.");
+            // manage unique api call errors here, rest handle to "manage_axios_api_call_errors"
             if(errors.response) {
                 setResMsg(flatten_arr(errors.response.data));
             }
-            manage_api_call_errors(errors, setResMsg);
+            manage_axios_api_call_errors(errors, setResMsg);
         });
     }
 
     useEffect(getEmployeeInfo, []);
     console.log(resMsg, resMsg==false)
     return (
-        <MainContainer inheritCompName={compName}>
+        <MainContainer inheritCompName={`emp-form-wrapper ${compName}`}>
             <div className="page-head">
                 <h1>Update Employee</h1>
             </div>
@@ -225,7 +228,7 @@ function UpdateEmployee() {
                     { fieldsErrors.epfpic?<div className="f-error">{fieldsErrors.epfpic}</div>:"" }
                 </div>
                 <div className='submit-section stick-bottom'>
-                    {(resMsg!=false)?<div className={`msg-container ${isError?'error':'success'}`}>
+                    {(resMsg.length!=0) && <div className={`msg-container ${isError?'error':'success'}`}>
                         <div className="text">
                             {
                                 resMsg.map((msg,index)=> {
@@ -233,7 +236,7 @@ function UpdateEmployee() {
                                 })
                             }
                         </div>
-                    </div>:''}
+                    </div>}
                     <div className="button-container">
                         <button className='app-btn outline' onClick={()=>{navigate('/viewemployees')}}>Cancel</button>
                         <button className='app-btn dark' onClick={updateEmpData}>Update Employee</button>

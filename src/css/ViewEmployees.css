@@ -189,22 +189,41 @@ td.clickable:active {
     text-align: center;
 }
 
-.pfpic {
-    padding: 8px;
-}
-
 .img-cont {
-    width: 60px;
-    height: 60px;
     border-radius: 4px;
     overflow: hidden;
-    background-color: #ddd;
+    background-color: #eee;
     margin: auto;
 }
 
 .img-cont img {
     width: 100%;
     height: auto;
+    transition: opacity 0.3s;
+}
+.img-cont.loading img {
+    opacity: 1;
+}
+.img-cont.loading img {
+    opacity: 0;
+}
+.img-cont.err {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.img-cont.err img {
+    width: 50%;
+    opacity: 0.3;
+}
+
+.pfpic {
+    padding: 8px;
+}
+
+.pfpic .img-cont {
+    width: 60px;
+    height: 60px;
 }
 
 .record-actions {

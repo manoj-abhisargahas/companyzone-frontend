@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useState, useEffect, useRef, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { flatten_arr, manage_api_call_errors } from './functions'
+import { flatten_arr, manage_axios_api_call_errors } from './functions'
 import useExternalCss from './useExternalCss'
 import { API_CONFIG } from '../js/config'
 import { MainContainer, RightPane, useRightPane } from './MainContent'
@@ -14,7 +14,7 @@ const ADD_NEW_EMP_URL = `${API_BASE_URL}/Employee/`;
 
 const compName = 'addemp';
 function AddEmployee() {
-    useExternalCss('/src/css/EmployeeTemplate.css');
+    // useExternalCss('/src/css/EmployeeTemplate.css');
 
     const [depts, setDepts] = useState([]);
     const [locs, setLocs] = useState([]);
@@ -64,15 +64,19 @@ function AddEmployee() {
 
         axios.get(FORM_METADATA_FETCH_API_URL).then((response) => {
             console.log(response);
-            setDepts(response.data.depts);
-            setLocs(response.data.locs);
-            setIsResMsgError(false);
+            if(response.data) {     
+                setDepts(response.data.depts);
+                setLocs(response.data.locs);
+                setIsResMsgError(false);
+            }
         }).catch((errors) => {
             setIsResMsgError(true);
-            manage_api_call_errors(errors, setResMsg, "Fetching Departments, Locations Failed.");
-            // manage unique api call errors here, rest handle to "manage_api_call_errors"
+            manage_axios_api_call_errors(errors, setResMsg, "Fetching Departments, Locations Failed.");
+            // manage unique api call errors here, rest handle to "manage_axios_api_call_errors"
             if(errors.response) {
-                setResMsg("⚠ Fetching Departments, Locations Failed.");
+                const err_arr = flatten_arr(errors.response.data);
+                err_arr.unshift("⚠ Fetching Departments, Locations Failed.");
+                setResMsg(err_arr);
             }
         });
     }
@@ -138,30 +142,31 @@ function AddEmployee() {
 
         axios.post(ADD_NEW_EMP_URL, payload, config).then((response) => {
             console.log(response);
-            cleanFields();
-            
-            const successMsg = `✔️ Employee (${response.data.eno}-${response.data.ename}) Inserted!`;
-            setResMsg([successMsg]);
-            setIsResMsgError(false);
+            if(response.data) {     
+                cleanFields();
+                
+                const successMsg = `✔️ Employee (${response.data.eno}-${response.data.ename}) Inserted!`;
+                setResMsg([successMsg]);
+                setIsResMsgError(false);
 
-            navigate('/viewemployees', {
-                state: { msg:{text:successMsg, type:'success'} }
-            });
+                navigate('/viewemployees', {
+                    state: { msg:{text:successMsg, type:'success'} }
+                });
+            }
         }).catch((errors) => {
             setIsResMsgError(true);
-            manage_api_call_errors(errors, setResMsg, "Adding Employee Data Failed.");
-            // manage unique api call errors here, rest handle to "manage_api_call_errors"
+            manage_axios_api_call_errors(errors, setResMsg, "Adding Employee Data Failed.");
+            // manage unique api call errors here, rest handle to "manage_axios_api_call_errors"
             if(errors.response) {
                 setResMsg(flatten_arr(errors.response.data));
             }
-            manage_api_call_errors(errors, setResMsg);
         });
     }
 
     useEffect(getStartInfo, []);
 
     return (
-        <MainContainer inheritCompName={compName}>
+        <MainContainer inheritCompName={`emp-form-wrapper ${compName}`}>
             <div className="page-head">
                 <h1>Add Employee</h1>
             </div>
@@ -221,7 +226,7 @@ function AddEmployee() {
                     { fieldsErrors.epfpic?<div className="f-error">{fieldsErrors.epfpic}</div>:"" }
                 </div>
                 <div className='submit-section stick-bottom'>
-                    {(resMsg!=false)?<div className={`msg-container ${isError?'error':'success'}`}>
+                    {(resMsg.length!=0) && <div className={`msg-container ${isError?'error':'success'}`}>
                         <div className="text">
                             {
                                 resMsg.map((msg,index)=> {
@@ -229,7 +234,7 @@ function AddEmployee() {
                                 })
                             }
                         </div>
-                    </div>:''}
+                    </div>}
                     <div className="button-container">
                         <button className='app-btn dark-invert' onClick={addNewEmpData}>Insert New Employee</button>
                     </div>

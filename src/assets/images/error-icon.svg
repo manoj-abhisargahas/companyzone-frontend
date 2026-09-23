@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+	 x="0px" y="0px" viewBox="0 0 100 100" overflow="visible">
+<g>
+	<path fill="none" stroke="#000000" stroke-width="4" stroke-miterlimit="10" d="M41.2,14.5L6.6,74.5c-3.9,6.8,1,15.2,8.8,15.2h69.2
+		c7.8,0,12.7-8.5,8.8-15.2L58.8,14.5C54.9,7.8,45.1,7.8,41.2,14.5z"/>
+	<path d="M45.5,74.7c0-2.7,1.9-4.7,4.6-4.7c2.7,0,4.4,2,4.4,4.7c0,2.7-1.7,4.7-4.6,4.7C47.3,79.4,45.5,77.4,45.5,74.7z M47.4,64
+		l-1.1-36.5h7.3L52.6,64H47.4z"/>
+</g>
+</svg>
